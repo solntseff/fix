@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fix by Solntseff — исправление неправильной раскладки</title>
+  <link rel="icon" href="fonts.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7efe4;
+      --bg2: #f1e4d4;
+      --surface: rgba(255,255,255,.65);
+      --surface2: rgba(255,250,244,.88);
+      --text: #2d261f;
+      --text-dim: #8a7d6f;
+      --text-mid: #5d5347;
+      --border: rgba(96,76,56,.12);
+      --accent: #9f7d5c;
+      --accent2: #c59b6d;
+      --accent-dim: rgba(159,125,92,.1);
+      --accent-glow: rgba(197,155,109,.3);
+      --error: #c44;
+      --error-dim: rgba(204,68,68,.08);
+      --correct: #3a7d5c;
+      --correct-dim: rgba(58,125,92,.08);
+      --correct-border: rgba(58,125,92,.18);
+      --shadow: 0 24px 80px rgba(86,62,34,.1);
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Outfit', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 15%, rgba(197,155,109,.16), transparent 28%),
+        radial-gradient(circle at 80% 20%, rgba(159,125,92,.1), transparent 28%),
+        radial-gradient(circle at 50% 92%, rgba(221,197,174,.18), transparent 30%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* subtle dot texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(93,72,53,.06) 1px, transparent 1px);
+      background-size: 4px 4px;
+      z-index: 0;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ══════════ NAV ══════════ */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.12);
+      object-fit: cover;
+    }
+
+    .brand-name {
+      font-weight: 800;
+      font-size: 17px;
+      letter-spacing: -.02em;
+    }
+    .brand-name span {
+      color: var(--text-dim);
+      font-weight: 400;
+      font-size: 13px;
+      margin-left: 8px;
+    }
+
+    nav a.nav-dl {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.6);
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all .2s;
+    }
+    nav a.nav-dl:hover {
+      background: rgba(255,255,255,.9);
+      border-color: rgba(159,125,92,.25);
+    }
+
+    /* ══════════ HERO ══════════ */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      align-items: center;
+      min-height: calc(100vh - 82px);
+      padding: 72px 0;
+    }
+
+    .hero-left { max-width: 540px; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+    .tag::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      box-shadow: 0 0 12px var(--accent-glow);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .4; }
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 5.2vw, 4.6rem);
+      font-weight: 900;
+      line-height: .95;
+      letter-spacing: -.04em;
+      margin-bottom: 24px;
+    }
+    h1 em {
+      font-style: normal;
+      background: linear-gradient(90deg, #7c6048, #b07d4b, #d1ac80);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .lead {
+      font-size: 17px;
+      line-height: 1.75;
+      color: var(--text-mid);
+      max-width: 50ch;
+      margin-bottom: 36px;
+    }
+
+    .cta-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 30px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      font-family: var(--sans);
+      font-size: 16px;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 16px 40px rgba(159,125,92,.22);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 52px rgba(159,125,92,.3);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 24px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255,255,255,.4);
+      color: var(--text-mid);
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all .2s;
+    }
+    .btn-ghost:hover {
+      border-color: rgba(159,125,92,.25);
+      background: rgba(255,255,255,.7);
+      color: var(--text);
+    }
+
+    .meta-line {
+      margin-top: 20px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* ══════════ DEMO CARD ══════════ */
+    .demo {
+      position: relative;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255,252,248,.92), rgba(245,235,223,.85));
+      backdrop-filter: blur(20px);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .demo-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .demo-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .demo-dots i {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(0,0,0,.08);
+    }
+    .demo-dots i:first-child { background: #e5695c; }
+    .demo-dots i:nth-child(2) { background: #dba644; }
+    .demo-dots i:nth-child(3) { background: #61b06c; }
+
+    .demo-body {
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .text-block {
+      padding: 16px 20px;
+      border-radius: 14px;
+      font-family: var(--mono);
+      font-size: clamp(14px, 1.5vw, 17px);
+      line-height: 1.6;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* wrong text with glitch */
+    .text-wrong {
+      background: var(--error-dim);
+      border: 1px solid rgba(204,68,68,.12);
+      color: var(--error);
+    }
+    .text-wrong::before {
+      content: 'ВВОД';
+      position: absolute;
+      top: 6px;
+      right: 12px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: rgba(204,68,68,.35);
+    }
+
+    .text-wrong .glitch-text {
+      position: relative;
+      display: inline;
+    }
+    .text-wrong .glitch-text::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: rgba(204,68,68,.6);
+      clip-path: inset(0 0 0 0);
+      animation: glitch-flicker 4s ease-in-out infinite;
+    }
+
+    @keyframes glitch-flicker {
+      0%, 88%, 100% { opacity: 0; clip-path: inset(0); transform: translate(0); }
+      89% { opacity: 1; clip-path: inset(10% 0 60% 0); transform: translate(-3px, 0); }
+      90% { opacity: 0; }
+      92% { opacity: .7; clip-path: inset(50% 0 20% 0); transform: translate(4px, 0); }
+      93% { opacity: 0; }
+      95% { opacity: .5; clip-path: inset(30% 0 40% 0); transform: translate(-2px, 1px); }
+      96% { opacity: 0; }
+    }
+
+    /* transform indicator */
+    .transform-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 6px 0;
+    }
+    .transform-key {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.6);
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-mid);
+    }
+    .kbd {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(0,0,0,.05);
+      border: 1px solid var(--border);
+      font-size: 11px;
+    }
+    .transform-arrow {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      font-weight: 900;
+      box-shadow: 0 8px 20px rgba(159,125,92,.2);
+      animation: arrow-pulse 2s ease-in-out infinite;
+    }
+    @keyframes arrow-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    /* correct text with typewriter reveal */
+    .text-right {
+      background: var(--correct-dim);
+      border: 1px solid var(--correct-border);
+      color: var(--correct);
+    }
+    .text-right::before {
+      content: 'РЕЗУЛЬТАТ';
+      position: absolute;
+      top: 6px;
+      right: 12px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: rgba(58,125,92,.3);
+    }
+
+    .text-right .typed {
+      display: inline;
+      border-right: 2px solid var(--correct);
+      animation: blink-cursor .8s step-end infinite;
+    }
+    @keyframes blink-cursor {
+      0%, 100% { border-color: var(--correct); }
+      50% { border-color: transparent; }
+    }
+
+    /* mini keyboard */
+    .mini-kb {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 4px;
+      padding: 16px 24px 20px;
+      border-top: 1px solid var(--border);
+    }
+    .k {
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.7), rgba(243,232,221,.6));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
+      transition: all .15s;
+    }
+    .k:hover {
+      border-color: rgba(159,125,92,.3);
+      background: rgba(255,255,255,.85);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(86,62,34,.1);
+    }
+    .k.s2 { grid-column: span 2; }
+    .k.s3 { grid-column: span 3; }
+    .k.s4 { grid-column: span 4; }
+    .k.active {
+      border-color: rgba(159,125,92,.35);
+      color: var(--accent);
+      background: linear-gradient(180deg, rgba(197,155,109,.12), rgba(197,155,109,.06));
+      box-shadow: 0 0 16px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,.4);
+    }
+
+    /* ══════════ FEATURES ══════════ */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 0 0 80px;
+    }
+
+    .feat {
+      padding: 32px 28px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.5);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all .25s;
+    }
+    .feat:hover {
+      background: rgba(255,255,255,.75);
+      border-color: rgba(159,125,92,.2);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 48px rgba(86,62,34,.08);
+    }
+
+    .feat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      background: linear-gradient(135deg, rgba(197,155,109,.12), rgba(159,125,92,.06));
+      border: 1px solid rgba(159,125,92,.12);
+    }
+
+    .feat h3 {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -.01em;
+    }
+
+    .feat p {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-dim);
+    }
+
+    /* ══════════ PRIVACY ══════════ */
+    .privacy-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      padding: 72px 0 100px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sec-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(197,155,109,.1);
+      border: 1px solid rgba(159,125,92,.15);
+      margin-bottom: 20px;
+    }
+
+    .privacy-left h2 {
+      font-size: clamp(1.8rem, 3.2vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: -.03em;
+      line-height: 1.08;
+      margin-bottom: 16px;
+    }
+
+    .privacy-left p {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text-mid);
+      max-width: 44ch;
+    }
+
+    .privacy-visual {
+      display: grid;
+      gap: 12px;
+    }
+
+    .priv-card {
+      padding: 20px 24px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.5);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: all .2s;
+    }
+    .priv-card:hover {
+      background: rgba(255,255,255,.75);
+      transform: translateX(4px);
+    }
+
+    .priv-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(197,155,109,.1);
+      border: 1px solid rgba(159,125,92,.1);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    .priv-card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .priv-card p {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+
+    /* ══════════ DOWNLOAD + DONATE ══════════ */
+    .download-section {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 48px;
+      align-items: center;
+      padding: 72px 0 80px;
+      border-top: 1px solid var(--border);
+    }
+
+    .dl-main {
+      text-align: center;
+    }
+    .dl-main h2 {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 900;
+      letter-spacing: -.03em;
+      margin-bottom: 8px;
+    }
+    .dl-main p {
+      color: var(--text-dim);
+      font-size: 15px;
+      margin-bottom: 24px;
+    }
+    .btn-dl-big {
+      font-size: 18px;
+      padding: 18px 36px;
+      border-radius: 18px;
+    }
+    .dl-meta {
+      margin-top: 16px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .dl-counter .count {
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .dl-divider {
+      width: 1px;
+      height: 160px;
+      background: var(--border);
+    }
+
+    .dl-coffee {
+      text-align: center;
+    }
+    .dl-coffee .coffee-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+    .dl-coffee h3 {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -.01em;
+      margin-bottom: 8px;
+    }
+    .dl-coffee p {
+      color: var(--text-dim);
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 36ch;
+      margin: 0 auto 20px;
+    }
+    .btn-coffee {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.55);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all .25s;
+      cursor: pointer;
+    }
+    .btn-coffee:hover {
+      background: rgba(255,255,255,.85);
+      border-color: rgba(159,125,92,.25);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(86,62,34,.08);
+    }
+
+    /* ══════════ FOOTER ══════════ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 0;
+    }
+    footer .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+    }
+
+    /* ══════════ ANIMATIONS ══════════ */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(18px);
+      animation: fadeUp .65s ease forwards;
+    }
+    .fade-up.d1 { animation-delay: .08s; }
+    .fade-up.d2 { animation-delay: .16s; }
+    .fade-up.d3 { animation-delay: .24s; }
+    .fade-up.d4 { animation-delay: .3s; }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .demo {
+      opacity: 0;
+      animation: fadeUp .8s ease .2s forwards;
+    }
+
+    /* ══════════ RESPONSIVE ══════════ */
+    @media (max-width: 960px) {
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 48px;
+        min-height: auto;
+        padding: 48px 0 64px;
+      }
+      .hero-left { max-width: 100%; }
+      .features { grid-template-columns: 1fr; }
+      .privacy-section { grid-template-columns: 1fr; gap: 32px; }
+      .download-section {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .dl-divider {
+        width: 100%;
+        height: 1px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .wrap { padding: 0 16px; }
+      nav { padding: 16px 0; }
+      .brand-name span { display: none; }
+      .hero { padding: 32px 0 48px; gap: 32px; }
+      h1 { font-size: 2.4rem; }
+      .demo-body { padding: 20px 16px; }
+      .mini-kb { padding: 12px 16px 16px; }
+      .k { height: 32px; font-size: 10px; }
+      .feat { padding: 24px 20px; }
+      footer .footer-inner { flex-direction: column; gap: 6px; text-align: center; }
+      .cta-row { flex-direction: column; align-items: stretch; }
+      .btn-primary, .btn-ghost { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+  <!-- NAV -->
+  <nav>
+    <div class="brand">
+      <img class="logo" src="fonts.ico" alt="Fix">
+      <div class="brand-name">Fix <span>by Solntseff</span></div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="tag fade-up">Исправление раскладки</div>
+      <h1 class="fade-up d1">Набрали не в той раскладке? <em>Исправим.</em></h1>
+      <p class="lead fade-up d2">
+        Выделите текст, нажмите горячую клавишу — абракадабра мгновенно превращается в нормальный текст. Никаких серверов, всё локально.
+      </p>
+      <div class="cta-row fade-up d3">
+        <a class="btn-primary" href="#download">⬇ Скачать для Windows</a>
+        <a class="btn-ghost" href="#features">Как это работает</a>
+      </div>
+      <div class="meta-line fade-up d4">v1.0 · Windows 10/11 · ~2 MB · бесплатно</div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-bar">
+        <div class="demo-dots"><i></i><i></i><i></i></div>
+        <span>fix-demo</span>
+      </div>
+      <div class="demo-body">
+        <div class="text-block text-wrong">
+          <span class="glitch-text" data-text="ghbdtn? rfr ltkf? Dct jnkbxyj!">ghbdtn, rfr ltkf? Dct jnkbxyj!</span>
+        </div>
+        <div class="transform-row">
+          <div class="transform-key"><span class="kbd">Alt</span> + <span class="kbd">Space</span></div>
+          <div class="transform-arrow">↓</div>
+        </div>
+        <div class="text-block text-right">
+          <span class="typed">привет, как дела? Всё отлично!</span>
+        </div>
+      </div>
+      <div class="mini-kb">
+        <div class="k">Й</div><div class="k">Ц</div><div class="k">У</div><div class="k">К</div><div class="k">Е</div><div class="k">Н</div><div class="k">Г</div><div class="k">Ш</div><div class="k">Щ</div><div class="k">З</div>
+        <div class="k">Ф</div><div class="k">Ы</div><div class="k">В</div><div class="k">А</div><div class="k">П</div><div class="k">Р</div><div class="k">О</div><div class="k">Л</div><div class="k">Д</div><div class="k">Ж</div>
+        <div class="k active s3">Alt</div><div class="k active s4">Space</div><div class="k s3">Enter</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="feat">
+      <div class="feat-icon">⌨</div>
+      <h3>Одна горячая клавиша</h3>
+      <p>Выделите текст и нажмите Alt+Space. Неправильная раскладка мгновенно конвертируется в правильную.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">⚡</div>
+      <h3>Мгновенное исправление</h3>
+      <p>Никаких задержек и окон. Текст заменяется на месте — прямо там, где вы его набрали.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🔒</div>
+      <h3>Полная приватность</h3>
+      <p>Ничего не отправляется в интернет. Вся конвертация происходит локально на вашем компьютере.</p>
+    </div>
+  </section>
+
+  <!-- PRIVACY -->
+  <section class="privacy-section">
+    <div class="privacy-left">
+      <div class="sec-tag">🔐 Приватность</div>
+      <h2>Всё остаётся на вашем компьютере</h2>
+      <p>Fix работает автономно. Нет серверов, нет аналитики, нет слежки. Ваш текст — это ваше дело.</p>
+    </div>
+    <div class="privacy-visual">
+      <div class="priv-card">
+        <div class="priv-icon">🚫</div>
+        <div>
+          <h4>Без интернета</h4>
+          <p>Программа не делает сетевых запросов. Работает даже в офлайне.</p>
+        </div>
+      </div>
+      <div class="priv-card">
+        <div class="priv-icon">🧠</div>
+        <div>
+          <h4>Без сбора данных</h4>
+          <p>Не читает ваш ввод, не логирует нажатия, не записывает историю.</p>
+        </div>
+      </div>
+      <div class="priv-card">
+        <div class="priv-icon">📦</div>
+        <div>
+          <h4>Лёгкая и простая</h4>
+          <p>Один файл, ~2 МБ. Установил, настроил горячую клавишу — работает.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- DOWNLOAD + DONATE -->
+<div class="wrap">
+  <section class="download-section" id="download">
+    <div class="dl-main">
+      <h2>Скачать Fix</h2>
+      <p>Бесплатно. Без регистрации. Без подписок.</p>
+      <a class="btn-primary btn-dl-big" href="download.php">⬇ Скачать для Windows</a>
+      <div class="dl-meta">
+        v1.0 · Windows 10/11 · ~2 MB
+        <span class="dl-counter" id="dl-counter" style="display:none">
+          · <span class="count" id="dl-count">0</span> скачиваний
+        </span>
+      </div>
+    </div>
+    <div class="dl-divider"></div>
+    <div class="dl-coffee">
+      <div class="coffee-icon">☕</div>
+      <h3>Нравится? Угостите автора кофе</h3>
+      <p>Программа полностью бесплатна и такой останется. Но если Fix сэкономил вам время — можете поддержать разработку. Это не обязательно, но приятно.</p>
+      <a class="btn-coffee" href="#" id="donate-btn">☕ Купить мне кофе</a>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <span>Fix by Solntseff © 2025</span>
+      <span>Windows · Локальное · Бесплатное</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Счётчик скачиваний
+fetch('stats.php')
+  .then(r => r.json())
+  .then(d => {
+    if (d.total > 0) {
+      document.getElementById('dl-count').textContent = d.total;
+      document.getElementById('dl-counter').style.display = 'inline-flex';
+    }
+  })
+  .catch(() => {});
+</script>
+</body>
+</html>

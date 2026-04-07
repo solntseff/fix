@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fix by Solntseff — исправление неправильной раскладки</title>
+  <style>
+    :root{
+      --bg:#f7efe4;
+      --bg2:#f1e4d4;
+      --card:rgba(255,250,244,.88);
+      --card2:rgba(255,255,255,.82);
+      --text:#2d261f;
+      --muted:#6b5f52;
+      --line:rgba(96,76,56,.14);
+      --accent:#c59b6d;
+      --accent2:#9f7d5c;
+      --accent3:#ddc5ae;
+      --shadow:0 24px 80px rgba(86,62,34,.12);
+    }
+    *{box-sizing:border-box}
+    html,body{min-height:100%}
+    body{
+      margin:0;
+      font-family:Segoe UI, Inter, system-ui, -apple-system, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 10% 15%, rgba(197,155,109,.16), transparent 28%),
+        radial-gradient(circle at 80% 20%, rgba(159,125,92,.12), transparent 28%),
+        radial-gradient(circle at 50% 92%, rgba(221,197,174,.20), transparent 30%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      overflow-x:hidden;
+    }
+    body::before{
+      content:'';
+      position:fixed; inset:0;
+      pointer-events:none;
+      background-image:radial-gradient(rgba(93,72,53,.08) 1px, transparent 1px);
+      background-size:4px 4px;
+      opacity:.18;
+    }
+    .wrap{
+      width:min(1240px, calc(100% - 32px));
+      margin:0 auto;
+      padding:24px 0 36px;
+    }
+    .hero{
+      display:grid;
+      grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);
+      gap:24px;
+      align-items:center;
+      min-height:calc(100vh - 52px);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin-bottom:18px;
+    }
+    .logo{
+      width:56px;height:56px;border-radius:18px;
+      background:#0f0f10;
+      color:#fff;
+      display:grid;place-items:center;
+      font-size:30px;
+      font-weight:900;
+      box-shadow:0 14px 32px rgba(0,0,0,.14);
+      flex:0 0 auto;
+    }
+    .brand-text{display:flex;flex-direction:column;gap:2px}
+    .brand-text strong{font-size:18px;letter-spacing:-.02em}
+    .brand-text span{color:var(--muted);font-size:13px}
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(255,255,255,.42);
+      color:var(--muted);
+      font-size:14px;
+      letter-spacing:.02em;
+      backdrop-filter:blur(12px);
+    }
+    .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 18px rgba(197,155,109,.55)}
+    h1{
+      margin:18px 0 0;
+      font-size:clamp(2.8rem, 6.3vw, 5.7rem);
+      line-height:.94;
+      letter-spacing:-.05em;
+      max-width:11ch;
+      font-weight:900;
+    }
+    h1 .grad{
+      background:linear-gradient(90deg,#3f3428 0%, #7c6048 40%, #b07d4b 78%, #d1ac80 100%);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+    .lead{
+      margin:20px 0 0;
+      max-width:62ch;
+      font-size:clamp(1.02rem, 1.6vw, 1.22rem);
+      line-height:1.75;
+      color:var(--muted);
+    }
+    .actions{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-top:28px;
+      align-items:center;
+    }
+    .btn{
+      appearance:none;
+      border:0;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      min-height:58px;
+      padding:0 22px;
+      border-radius:16px;
+      font-weight:800;
+      font-size:16px;
+      color:white;
+      background:linear-gradient(90deg,var(--accent2),var(--accent));
+      box-shadow:0 18px 40px rgba(159,125,92,.22);
+      transition:transform .18s ease, filter .18s ease, box-shadow .18s ease;
+    }
+    .btn:hover{transform:translateY(-2px);filter:brightness(1.03);box-shadow:0 22px 52px rgba(159,125,92,.28)}
+    .meta{margin-top:18px;color:var(--muted);font-size:13px}
+    .badge-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+    .badge{padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.42);color:var(--muted);font-size:13px}
+
+    .privacy{
+      margin-top:18px;
+      padding:18px 18px;
+      border-radius:22px;
+      border:1px solid rgba(159,125,92,.18);
+      background:linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,244,233,.88));
+      box-shadow:0 14px 34px rgba(86,62,34,.08);
+      display:grid;
+      gap:10px;
+    }
+    .privacy .label{
+      display:inline-flex;
+      align-items:center;
+      width:fit-content;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(197,155,109,.12);
+      border:1px solid rgba(159,125,92,.18);
+      color:#7a5b3e;
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.02em;
+    }
+    .privacy h2{
+      margin:0;
+      font-size:clamp(1.25rem, 2.2vw, 1.8rem);
+      line-height:1.15;
+      letter-spacing:-.03em;
+    }
+    .privacy p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.7;
+      font-size:15px;
+      max-width:60ch;
+    }
+
+    .visual{
+      position:relative;
+      min-height:680px;
+      border:1px solid var(--line);
+      border-radius:32px;
+      background:linear-gradient(180deg, rgba(255,252,248,.94), rgba(245,235,223,.88));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      isolation:isolate;
+    }
+    .visual::before{
+      content:'';
+      position:absolute;
+      inset:-15% -10% auto auto;
+      width:460px;height:460px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(197,155,109,.26), transparent 68%);
+      filter:blur(8px);
+    }
+    .visual::after{
+      content:'';
+      position:absolute;
+      inset:auto auto -18% -16%;
+      width:420px;height:420px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(159,125,92,.18), transparent 68%);
+      filter:blur(10px);
+    }
+    .card{
+      position:absolute;
+      inset:32px;
+      border:1px solid rgba(90,68,47,.12);
+      border-radius:28px;
+      background:linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,251,245,.58));
+      backdrop-filter:blur(12px);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+    .screen{padding:26px 26px 0}
+    .screen-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      color:#6b5744;
+      font-size:13px;
+      margin-bottom:12px;
+      opacity:.95;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.72);
+      border:1px solid rgba(90,68,47,.1);
+    }
+    .monogram{
+      position:absolute;
+      right:30px;
+      top:24px;
+      width:106px;height:106px;
+      border-radius:30px;
+      background:linear-gradient(135deg,#171717,#0f0f10);
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font-size:52px;
+      font-weight:900;
+      letter-spacing:-.06em;
+      box-shadow:0 18px 40px rgba(20,16,12,.22);
+      transform:rotate(4deg);
+    }
+    .monogram small{display:block;font-size:13px;letter-spacing:.22em;margin-top:-8px;font-weight:800;opacity:.85}
+    .keyboard{
+      margin:88px auto 0;
+      width:min(100%, 560px);
+      display:grid;
+      gap:10px;
+      grid-template-columns:repeat(10,1fr);
+    }
+    .key{
+      height:56px;
+      border-radius:14px;
+      border:1px solid rgba(90,68,47,.12);
+      background:linear-gradient(180deg, rgba(255,255,255,.84), rgba(243,232,221,.82));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#624c39;
+      font-weight:800;
+      font-size:15px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+    }
+    .key.big{grid-column:span 2}
+    .key.wide{grid-column:span 3}
+    .key.space{grid-column:span 4}
+    .wrong,.right{
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      width:min(540px, calc(100% - 48px));
+      padding:16px 18px;
+      border-radius:18px;
+      font-size:clamp(16px,2vw,22px);
+      line-height:1.5;
+      border:1px solid rgba(90,68,47,.12);
+      box-shadow:0 16px 40px rgba(0,0,0,.08);
+    }
+    .wrong{
+      bottom:116px;
+      background:rgba(197,155,109,.16);
+      color:#5d4631;
+    }
+    .right{
+      bottom:32px;
+      background:rgba(159,125,92,.16);
+      color:#433122;
+    }
+    .arrow{
+      position:absolute;
+      left:50%;
+      bottom:80px;
+      transform:translateX(-50%);
+      width:84px;height:84px;border-radius:50%;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--accent2),var(--accent));
+      box-shadow:0 18px 40px rgba(159,125,92,.24);
+      font-size:34px;
+      font-weight:900;
+      color:white;
+      border:3px solid rgba(255,255,255,.52);
+    }
+    @media (max-width: 980px){
+      .hero{grid-template-columns:1fr;min-height:auto;padding-top:22px}
+      .visual{min-height:560px}
+      h1{max-width:100%}
+    }
+    @media (max-width: 640px){
+      .wrap{width:min(100% - 24px, 1240px);padding-top:16px}
+      .hero{gap:18px}
+      .brand{margin-bottom:12px}
+      .visual{min-height:520px;border-radius:24px}
+      .card{inset:16px}
+      .screen{padding:18px 18px 0}
+      .key{height:44px;font-size:13px}
+      .btn{width:100%}
+      .monogram{width:82px;height:82px;font-size:40px;right:16px;top:16px}
+      .keyboard{margin-top:78px}
+      .wrong,.right{font-size:16px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div>
+        <div class="brand">
+          <div class="logo">f</div>
+          <div class="brand-text">
+            <strong>Fix by Solntseff</strong>
+            <span>локальное исправление неправильной раскладки</span>
+          </div>
+        </div>
+
+        <div class="eyebrow"><span class="dot"></span> я наконец-то решил проблему неправильной раскладки</div>
+        <h1><span class="grad">Я исправил</span> неправильный текст. И сделал это для вас.</h1>
+        <p class="lead">
+          Больше не нужно стирать абракадабру вручную, перепечатывать целые абзацы и злиться на клавиатуру.
+          Нажмите горячую клавишу — и текст превращается в правильный, аккуратный и готовый к отправке.
+        </p>
+
+        <div class="actions">
+          <a class="btn" href="#download">⬇ Скачать</a>
+        </div>
+
+        <div class="badge-row">
+          <div class="badge">Alt+Space</div>
+          <div class="badge">RU / EN</div>
+          <div class="badge">Исправление выделенного текста</div>
+          <div class="badge">Без лишних кликов</div>
+        </div>
+
+        <div class="privacy" id="download">
+          <div class="label">ПРИВАТНОСТЬ — ЭТО УТП</div>
+          <h2>Система работает полностью локально, автономно и ничего никуда не отправляет.</h2>
+          <p>
+            Она не считывает ваш ввод, не передаёт текст на сервер и не шпионит за тем, что вы печатаете.
+            Исправление происходит прямо на вашем компьютере — быстро, локально и без лишних зависимостей.
+          </p>
+        </div>
+
+        <p class="meta">Версия для Windows • Лёгкая установка • Работает везде, где можно печатать текст</p>
+      </div>
+
+      <div class="visual" aria-hidden="true">
+        <div class="card">
+          <div class="screen">
+            <div class="screen-top">
+              <span class="pill">Fix by Solntseff</span>
+              <span class="pill">local-only correction</span>
+            </div>
+            <div class="monogram">S<small>OL</small></div>
+            <div class="keyboard">
+              <div class="key">G</div><div class="key">H</div><div class="key">B</div><div class="key">D</div><div class="key">T</div><div class="key">N</div><div class="key">Y</div><div class="key">U</div><div class="key">I</div><div class="key">O</div>
+              <div class="key">R</div><div class="key">U</div><div class="key">S</div><div class="key">T</div><div class="key">E</div><div class="key">X</div><div class="key">T</div><div class="key">→</div><div class="key">↔</div><div class="key">✓</div>
+              <div class="key wide">Alt</div><div class="key big">Space</div><div class="key space">…</div><div class="key big">Enter</div><div class="key wide">Shift</div>
+            </div>
+          </div>
+          <div class="wrong">ghbdtn, rfr ltkf?</div>
+          <div class="arrow">↺</div>
+          <div class="right">привет, как дела?</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
