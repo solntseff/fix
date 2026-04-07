@@ -1,5 +1,6 @@
 cache/
 downloads.log
+subscribers.csv
 *.tmp
 *.exe
 *.zip
