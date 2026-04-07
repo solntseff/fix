@@ -669,6 +669,53 @@
       box-shadow: 0 12px 32px rgba(86,62,34,.08);
     }
 
+    /* ══════════ KOFI MODAL ══════════ */
+    .kofi-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,.5);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+    }
+    .kofi-overlay.open { display: flex; }
+    .kofi-modal {
+      position: relative;
+      width: 380px;
+      max-width: calc(100% - 32px);
+      height: 640px;
+      max-height: calc(100vh - 64px);
+      border-radius: 20px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 32px 80px rgba(0,0,0,.3);
+    }
+    .kofi-modal iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .kofi-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0,0,0,.06);
+      color: #333;
+      font-size: 18px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      z-index: 1;
+      transition: background .15s;
+    }
+    .kofi-close:hover { background: rgba(0,0,0,.12); }
+
     /* ══════════ FOOTER ══════════ */
     footer {
       border-top: 1px solid var(--border);
@@ -860,9 +907,17 @@
       <div class="coffee-icon">☕</div>
       <h3>Нравится? Угостите автора кофе</h3>
       <p>Программа полностью бесплатна и такой останется. Но если Fix сэкономил вам время — можете поддержать разработку. Это не обязательно, но приятно.</p>
-      <a class="btn-coffee" href="#" id="donate-btn">☕ Купить мне кофе</a>
+      <a class="btn-coffee" href="https://ko-fi.com/alexandrsolntseff" target="_blank" rel="noopener" onclick="document.getElementById('kofi-modal').classList.add('open');return false;">☕ Купить мне кофе</a>
     </div>
   </section>
+</div>
+
+<!-- Ko-fi modal -->
+<div class="kofi-overlay" id="kofi-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="kofi-modal">
+    <button class="kofi-close" onclick="document.getElementById('kofi-modal').classList.remove('open')">&times;</button>
+    <iframe src="https://ko-fi.com/alexandrsolntseff/?hidefeed=true&widget=true&embed=true" title="Ko-fi"></iframe>
+  </div>
 </div>
 
 <footer>
